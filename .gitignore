@@ -1,4 +1,5 @@
 .vscode
+results/
 dataset/zips/
 dataset/data_scene_flow/
 dataset/data_scene_flow_calib/
