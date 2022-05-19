@@ -366,18 +366,18 @@ bool resultsAvailable (string dir,string folder_name,Mail* mail) {
 bool eval (string result_sha,Mail* mail) {
 
   // ground truth and result directories
-  string gt_img_dir = "data/scene_flow/image_2";
-  string gt_obj_map_dir = "data/scene_flow/obj_map";
-  string gt_disp_noc_0_dir = "data/scene_flow/disp_noc_0";
-  string gt_disp_occ_0_dir = "data/scene_flow/disp_occ_0";
-  string gt_disp_noc_1_dir = "data/scene_flow/disp_noc_1";
-  string gt_disp_occ_1_dir = "data/scene_flow/disp_occ_1";
-  string gt_flow_noc_dir = "data/scene_flow/flow_noc";
-  string gt_flow_occ_dir = "data/scene_flow/flow_occ";
+  string gt_img_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/image_2";
+  string gt_obj_map_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/obj_map";
+  string gt_disp_noc_0_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/disp_noc_0";
+  string gt_disp_occ_0_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/disp_occ_0";
+  string gt_disp_noc_1_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/disp_noc_1";
+  string gt_disp_occ_1_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/disp_occ_1";
+  string gt_flow_noc_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/flow_noc";
+  string gt_flow_occ_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/flow_occ";
   string result_dir = "results/" + result_sha;
   string result_disp_0_dir = result_dir + "/data/disp_0";
   string result_disp_1_dir = result_dir + "/data/disp_1";
-  string result_flow_dir = result_dir + "/data/flow";
+  string result_flow_dir = result_dir;// + "/data/flow";
 
   // check availability of results
   bool avail_disp_0 = resultsAvailable(result_disp_0_dir,"disp_0",mail);
@@ -526,6 +526,7 @@ bool eval (string result_sha,Mail* mail) {
 
         // check submitted result
         string image_file = result_flow_dir + "/" + prefix + ".png";
+        std::cout << image_file;
         if (!imageFormat(image_file,png::color_type_rgb,16,F_gt_noc.width(),F_gt_noc.height())) {
           mail->msg("ERROR: Input must be png, 3 channels, 16 bit, %d x %d px",F_gt_noc.width(),F_gt_noc.height());
           return false;        

@@ -14,6 +14,13 @@ bool imageFormat(std::string file_name,png::color_type col,size_t depth,int32_t 
   file_stream.open(file_name.c_str(),std::ios::binary);
   png::reader<std::istream> reader(file_stream);
   reader.read_info();
+  
+  std::cout << reader.get_bit_depth();
+  std::cout << (reader.get_color_type()!=col) ;
+  std::cout << (reader.get_bit_depth()!=depth);
+  std::cout << (reader.get_width()!=width)    ;
+  std::cout << (reader.get_height()!=height)  ;
+
   if (reader.get_color_type()!=col)  return false;
   if (reader.get_bit_depth()!=depth) return false;
   if (reader.get_width()!=width)     return false;

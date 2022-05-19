@@ -17,6 +17,8 @@ def optical_flow(image1,image2, method = None):
     return flow
 
 def save_data(path,flow):
+    # flow = flow.astype(np.int16)
+    # print(type(flow))
     cv.imwrite(path,flow)
 
 def evalaute_data(path, method = None):
@@ -25,6 +27,8 @@ def evalaute_data(path, method = None):
     
     else:
         print("running kitti benchmark")
+        os.system("g++ -O3 -DNDEBUG -o ./evalution/cpp/evaluate_scene_flow ./evalution/cpp/evaluate_scene_flow.cpp -lpng")
+        os.system("./evalution/cpp/evaluate_scene_flow "+ args["method"])
 
 def calculate_flow(args):
     if not os.path.exists(args["output_dir"] +"/"+ args["method"]):
@@ -65,10 +69,10 @@ if __name__ == "__main__":
     ap.add_argument("-o", "--output_dir", required=False, default= "./results",
         help="path of directory for the results")
 
-    ap.add_argument("-m", "--method", required=False, default= "lucas_kanade_GoodFeaturesToTrack",
+    ap.add_argument("-m", "--method", required=False, default= "Farneback_flow",
         help="method")
     
-    ap.add_argument("--eval",type = bool,default=False)
+    ap.add_argument("--eval",type = bool,default=True)
     
     args = vars(ap.parse_args())
     
