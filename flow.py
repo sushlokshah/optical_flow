@@ -4,29 +4,62 @@ import os
 import sys
 import argparse
 import matplotlib.pyplot as plt
+import time
+# import numba
 
-from classical_flow.classical_flow_methods import lucus_kanade_flow, Farneback_flow
+start = time.time()
+print("hello")
+end = time.time()
+print(end - start)
+
+from src.classical_flow.classical_flow_methods import lucus_kanade_flow, Farneback_flow
+
+def data_formating(flow, mask):
+    flow = (flow - 2**15)/64
+    flow_kitti_format = np.zeros([flow.shape[0],flow.shape[1],3])
+    flow_kitti_format[:,:,:2] = flow
+    flow_kitti_format[:,:,2] = mask 
+    return flow_kitti_format
 
 def optical_flow(image1,image2, method = None):
     if method == "lucas_kanade_GoodFeaturesToTrack":
-        flow = lucus_kanade_flow(image1,image2,method="GoodFeaturesToTrack")
+        flow, mask= lucus_kanade_flow(image1,image2,method="GoodFeaturesToTrack")
     elif method == "lucas_kanade_Fast_features":
-        flow = lucus_kanade_flow(image1,image2,method="Fast_features")
+        flow, mask = lucus_kanade_flow(image1,image2,method="Fast_features")
     elif method == "Farneback_flow":
-        flow = Farneback_flow(image1,image2)
-    return flow
+        flow, mask = Farneback_flow(image1,image2)
+    return flow, mask
 
-def save_data(path,flow):
-    # flow = flow.astype(np.int16)
-    # print(type(flow))
-    cv.imwrite(path,flow)
+def save_data(path,flow,mask):
+    """output dataformat and the folder format
+
+    Args:
+        path (string): path and the file name of the images
+        flow (matrix): as per the format specified in the kitti benchmark
+        
+        directory structure
+        |-- flow    (Flow fields between first and second image)
+            |-- 000000_10.png
+            |-- ...
+            |-- 000199_10.png
+        
+        output format:
+        Optical flow maps are saved as 3-channel uint16 PNG images: The first channel
+        contains the u-component, the second channel the v-component and the third
+        channel denotes if the pixel is valid or not (1 if true, 0 otherwise). To convert
+        the u-/v-flow into floating point values, convert the value to float, subtract
+        2^15 and divide the result by 64.0:
+
+        flow_u(u,v) = ((float)I(u,v,1)-2^15)/64.0;
+        flow_v(u,v) = ((float)I(u,v,2)-2^15)/64.0;
+        valid(u,v)  = (bool)I(u,v,3);
+
+    """
+    flow_kitti_format = data_formating(flow,mask)
+    flow_kitti_format = flow_kitti_format.astype(np.uint16)
+    cv.imwrite(path,flow_kitti_format)
 
 def evalaute_data(path, method = None):
-    if method == "lucas_kanade_Fast_features" or method == "lucas_kanade_GoodFeaturesToTrack":
-        print("evalution script is not ready yet")
-    
-    else:
-        print("running kitti benchmark")
         os.system("g++ -O3 -DNDEBUG -o ./evalution/cpp/evaluate_scene_flow ./evalution/cpp/evaluate_scene_flow.cpp -lpng")
         os.system("./evalution/cpp/evaluate_scene_flow "+ args["method"])
 
@@ -44,8 +77,8 @@ def calculate_flow(args):
             image1 = cv.imread(args["data_dir"] +"/"+ pair + "_10.png",1)
             image2 = cv.imread(args["data_dir"] +"/"+ pair + "_11.png",1)
             print(image1.shape,image2.shape)
-            flow = optical_flow(image1,image2, method = args["method"])
-            save_data(args["output_dir"] +"/"+ args["method"]+"/"+ pair + "_10.png", flow)
+            flow, mask = optical_flow(image1,image2, method = args["method"])
+            save_data(args["output_dir"] +"/"+ args["method"]+"/"+ pair + "_10.png", flow, mask)
 
         if args["eval"]:
             evalaute_data(args["output_dir"],method = args["method"])
@@ -69,10 +102,10 @@ if __name__ == "__main__":
     ap.add_argument("-o", "--output_dir", required=False, default= "./results",
         help="path of directory for the results")
 
-    ap.add_argument("-m", "--method", required=False, default= "Farneback_flow",
+    ap.add_argument("-m", "--method", required=False, default= "lucas_kanade_Fast_features",
         help="method")
     
-    ap.add_argument("--eval",type = bool,default=True)
+    ap.add_argument("--eval",type = bool,default=False)
     
     args = vars(ap.parse_args())
     

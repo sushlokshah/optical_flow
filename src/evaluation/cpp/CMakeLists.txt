@@ -1,0 +1,14 @@
+# add_library(io_disp cpp/io_disp.h)
+# add_library(io_flow cpp/io_flow.h)
+# add_library(io_integer cpp/io_integer.h)
+# add_library(log_colormap cpp/log_colormap.h)
+# add_library(mail cpp/mail.h)
+project(optical_flow)
+cmake_minimum_required(VERSION 3.0)
+
+set(CMAKE_CXX_STANDARD 11)
+
+add_executable(evaluate_scene_flow evaluate_scene_flow.cpp)
+find_package(PNG REQUIRED)
+include_directories( ${PNG_INCLUDE_DIRS} )
+target_link_libraries(evaluate_scene_flow ${PNG_LIBRARIES})

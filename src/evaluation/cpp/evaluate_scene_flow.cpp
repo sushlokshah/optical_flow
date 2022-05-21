@@ -11,7 +11,7 @@
 #include "utils.h"
 
 #define NUM_TEST_IMAGES 200
-#define NUM_ERROR_IMAGES 20
+#define NUM_ERROR_IMAGES 200
 #define ABS_THRESH 3.0
 #define REL_THRESH 0.05
 
