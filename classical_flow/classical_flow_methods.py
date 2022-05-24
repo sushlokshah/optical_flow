@@ -16,8 +16,8 @@ def lucus_kanade_flow(image1,image2,method = None):
         # params for ShiTomasi corner detection
         feature_params = dict( maxCorners = 10000,
                             qualityLevel = 0.3,
-                            minDistance = 7,
-                            blockSize = 7 )
+                            minDistance = 1,
+                            blockSize = 3 )
         
         features1 = cv.goodFeaturesToTrack(image1_gray, mask = None, **feature_params)
         features2, mask, err = cv.calcOpticalFlowPyrLK(image1_gray, image2_gray, features1, None, **lk_params)
@@ -58,7 +58,7 @@ def lucus_kanade_flow(image1,image2,method = None):
     elif method == "Fast_features":
         fast = cv.FastFeatureDetector_create()
         fast.setNonmaxSuppression(1)
-        fast.setThreshold(30)
+        fast.setThreshold(10)
         kp = fast.detect(image1_gray,None)
         features1 = np.float32([ kp[m].pt for m in range(len(kp))]).reshape(-1,1,2)
         features2, mask, err = cv.calcOpticalFlowPyrLK(image1_gray, image2_gray, features1, None, **lk_params)
@@ -101,7 +101,7 @@ def Farneback_flow(image1,image2):
     # hsv[..., 1] = 255
     next = cv.cvtColor(image2, cv.COLOR_BGR2GRAY)
     flow = cv.calcOpticalFlowFarneback(prvs, next, None, 0.5, 3, 15, 3, 5, 1.2, 0)
-    print(flow.shape)
+    # print(flow.shape)
     mask = np.zeros_like(prvs).astype(np.float32)
     mask[:,:] = 1
     # mag, ang = cv.cartToPolar(flow[..., 0], flow[..., 1])

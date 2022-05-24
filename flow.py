@@ -7,18 +7,13 @@ import matplotlib.pyplot as plt
 import time
 # import numba
 
-start = time.time()
-print("hello")
-end = time.time()
-print(end - start)
-
-from src.classical_flow.classical_flow_methods import lucus_kanade_flow, Farneback_flow
+from classical_flow.classical_flow_methods import lucus_kanade_flow, Farneback_flow
 
 def data_formating(flow, mask):
-    flow = (flow - 2**15)/64
+    # flow = (2**15)/128 - flow
     flow_kitti_format = np.zeros([flow.shape[0],flow.shape[1],3])
-    flow_kitti_format[:,:,:2] = flow
-    flow_kitti_format[:,:,2] = mask 
+    flow_kitti_format[:,:,1:] = flow
+    flow_kitti_format[:,:,0] = mask 
     return flow_kitti_format
 
 def optical_flow(image1,image2, method = None):
@@ -56,7 +51,7 @@ def save_data(path,flow,mask):
 
     """
     flow_kitti_format = data_formating(flow,mask)
-    flow_kitti_format = flow_kitti_format.astype(np.uint16)
+    # flow_kitti_format = flow_kitti_format.astype(np.uint16)
     cv.imwrite(path,flow_kitti_format)
 
 def evalaute_data(path, method = None):
@@ -76,13 +71,14 @@ def calculate_flow(args):
         for pair in unique_set:
             image1 = cv.imread(args["data_dir"] +"/"+ pair + "_10.png",1)
             image2 = cv.imread(args["data_dir"] +"/"+ pair + "_11.png",1)
-            print(image1.shape,image2.shape)
+            # print(image1.shape,image2.shape)
             flow, mask = optical_flow(image1,image2, method = args["method"])
             save_data(args["output_dir"] +"/"+ args["method"]+"/"+ pair + "_10.png", flow, mask)
 
         if args["eval"]:
             evalaute_data(args["output_dir"],method = args["method"])
-            
+        print("output dir:",args["output_dir"] +"/"+ args["method"])
+        print("done")
     else: 
         print("data directory given as input is empty (invalid data)")
         return 
@@ -102,7 +98,7 @@ if __name__ == "__main__":
     ap.add_argument("-o", "--output_dir", required=False, default= "./results",
         help="path of directory for the results")
 
-    ap.add_argument("-m", "--method", required=False, default= "lucas_kanade_Fast_features",
+    ap.add_argument("-m", "--method", required=False, default= "lucas_kanade_GoodFeaturesToTrack",
         help="method")
     
     ap.add_argument("--eval",type = bool,default=False)

@@ -377,7 +377,7 @@ bool eval (string result_sha,Mail* mail) {
   string result_dir = "results/" + result_sha;
   string result_disp_0_dir = result_dir + "/data/disp_0";
   string result_disp_1_dir = result_dir + "/data/disp_1";
-  string result_flow_dir = result_dir;// + "/data/flow";
+  string result_flow_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/flow_noc";//result_dir;// + "/data/flow";
 
   // check availability of results
   bool avail_disp_0 = resultsAvailable(result_disp_0_dir,"disp_0",mail);
