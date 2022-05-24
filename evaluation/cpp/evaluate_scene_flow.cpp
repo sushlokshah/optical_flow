@@ -364,20 +364,19 @@ bool resultsAvailable (string dir,string folder_name,Mail* mail) {
 }
 
 bool eval (string result_sha,Mail* mail) {
-
   // ground truth and result directories
-  string gt_img_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/image_2";
-  string gt_obj_map_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/obj_map";
-  string gt_disp_noc_0_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/disp_noc_0";
-  string gt_disp_occ_0_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/disp_occ_0";
-  string gt_disp_noc_1_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/disp_noc_1";
-  string gt_disp_occ_1_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/disp_occ_1";
-  string gt_flow_noc_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/flow_noc";
-  string gt_flow_occ_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/flow_occ";
+  string gt_img_dir = "dataset/data_scene_flow/training/image_2";
+  string gt_obj_map_dir = "dataset/data_scene_flow/training/obj_map";
+  string gt_disp_noc_0_dir = "dataset/data_scene_flow/training/disp_noc_0";
+  string gt_disp_occ_0_dir = "dataset/data_scene_flow/training/disp_occ_0";
+  string gt_disp_noc_1_dir = "dataset/data_scene_flow/training/disp_noc_1";
+  string gt_disp_occ_1_dir = "dataset/data_scene_flow/training/disp_occ_1";
+  string gt_flow_noc_dir = "dataset/data_scene_flow/training/flow_noc";
+  string gt_flow_occ_dir = "dataset/data_scene_flow/training/flow_occ";
   string result_dir = "results/" + result_sha;
   string result_disp_0_dir = result_dir + "/data/disp_0";
   string result_disp_1_dir = result_dir + "/data/disp_1";
-  string result_flow_dir = "/home/sushlok/optical_flow/dataset/data_scene_flow/training/flow_noc";//result_dir;// + "/data/flow";
+  string result_flow_dir = "dataset/data_scene_flow/training/flow_noc";//result_dir;// + "/data/flow";
 
   // check availability of results
   bool avail_disp_0 = resultsAvailable(result_disp_0_dir,"disp_0",mail);

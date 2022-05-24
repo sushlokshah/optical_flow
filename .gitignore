@@ -1,10 +1,8 @@
 .vscode
-src/evaluation/cpp/build/
 results/
 dataset/zips/
 dataset/data_scene_flow/
 dataset/data_scene_flow_calib/
 dataset/data_scene_flow_multiview/
-src/evaluation/cpp/build/
+evaluation/cpp/build/
 papers/
-build/
