@@ -12,7 +12,7 @@ from classical_flow.classical_flow_methods import lucus_kanade_flow, Farneback_f
 from spynet.run import estimate
 
 def data_formating(flow, mask):
-    # flow = (2**15)/128 - flow
+    flow = (flow + 512)*64
     flow_kitti_format = np.zeros([flow.shape[0],flow.shape[1],3])
     flow_kitti_format[:,:,1:] = flow
     flow_kitti_format[:,:,0] = mask
@@ -60,7 +60,7 @@ def save_data(path,flow,mask):
 
     """
     flow_kitti_format = data_formating(flow,mask)
-    # flow_kitti_format = flow_kitti_format.astype(np.uint16)
+    flow_kitti_format = flow_kitti_format.astype(np.uint16)
     cv.imwrite(path,flow_kitti_format)
 
 def evalaute_data(path, method = None):
