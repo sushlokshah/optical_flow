@@ -61,7 +61,7 @@ def save_data(path,flow,mask):
     """
     flow_kitti_format = data_formating(flow,mask)
     # flow_kitti_format = flow_kitti_format.astype(np.uint16)
-    cv.imwrite(path,flow_kitti_format*255)
+    cv.imwrite(path,flow_kitti_format)
 
 def evalaute_data(path, method = None):
         os.system("g++ -O3 -DNDEBUG -o ./evalution/cpp/evaluate_scene_flow ./evalution/cpp/evaluate_scene_flow.cpp -lpng")
