@@ -235,11 +235,11 @@ public:
 
   // compute error map of flow field, given the non-occluded and occluded
   // ground truth optical flow maps. stores result as color png image.
-  png::image<png::rgb_pixel> errorImage (FlowImage &F_noc,FlowImage &F_occ,bool log_colors=false) {
+  png::image<png::rgb_pixel> errorImage (FlowImage &F_noc,FlowImage &F_occ, FlowImage &F_orig, bool log_colors=false) {
     png::image<png::rgb_pixel> image(width(),height());
     for (int32_t v=1; v<height()-1; v++) {
       for (int32_t u=1; u<width()-1; u++) {
-        if (F_occ.isValid(u,v)) {
+        if (F_occ.isValid(u,v) && F_orig.isValid(u,v)) {
           png::rgb_pixel val;
           if (log_colors) {
             float dfu = getFlowU(u,v)-F_occ.getFlowU(u,v);

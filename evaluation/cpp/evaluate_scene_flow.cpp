@@ -138,34 +138,51 @@ vector<float> flowErrorsOutlier (FlowImage &F_gt,FlowImage &F_orig,FlowImage &F_
       float f_dist = sqrt(fu*fu+fv*fv);
       float f_mag  = F_gt.getFlowMagnitude(u,v);
       bool  f_err  = f_dist>ABS_THRESH && f_dist/f_mag>REL_THRESH;
-      if (O_map.getValue(u,v)==0) {
-        if (F_gt.isValid(u,v)) {
+
+
+      // std::cout << "fu:" << fu << std::endl;
+      // std::cout << "fv:" << fv << std::endl;
+      // std::cout << "f_dist:" << f_dist << std::endl;
+      // std::cout << "f_mag:" << f_mag << std::endl;
+      // std::cout << "f_err:" << f_err << std::endl;
+
+      if (O_map.getValue(u,v)==0) 
+      {
+        if (F_gt.isValid(u,v) && F_orig.isValid(u,v)) 
+        {
           if (f_err)
             num_errors_bg++;
           num_pixels_bg++;
-          if (F_orig.isValid(u,v)) {
+          if (F_orig.isValid(u,v)) 
+          {
             if (f_err)
               num_errors_bg_result++;
             num_pixels_bg_result++;
           }
         }
-      } else {
-        if (F_gt.isValid(u,v)) {
+      } 
+      else 
+      {
+        if (F_gt.isValid(u,v) && F_orig.isValid(u,v)) 
+        {
           if (f_err)
             num_errors_fg++;
           num_pixels_fg++;
-          if (F_orig.isValid(u,v)) {
+          if (F_orig.isValid(u,v)) 
+          {
             if (f_err)
               num_errors_fg_result++;
             num_pixels_fg_result++;
           }
         }
       }
-      if (F_gt.isValid(u,v)) {
+      if (F_gt.isValid(u,v) && F_orig.isValid(u,v)) 
+      {
         if (f_err)
           num_errors_all++;
         num_pixels_all++;
-        if (F_orig.isValid(u,v)) {
+        if (F_orig.isValid(u,v)) 
+        {
           if (f_err)
             num_errors_all_result++;
           num_pixels_all_result++;
@@ -562,7 +579,7 @@ bool eval (string result_sha,Mail* mail) {
           fclose(errors_occ_file);
 
           // save error image
-          F_ipol.errorImage(F_gt_noc,F_gt_occ,true).write(result_dir + "/errors_flow_img/" + prefix + ".png");
+          F_ipol.errorImage(F_gt_noc,F_gt_occ,F_orig,true).write(result_dir + "/errors_flow_img/" + prefix + ".png");
 
           // find maximum ground truth flow
           float max_flow = F_gt_occ.maxFlow();
