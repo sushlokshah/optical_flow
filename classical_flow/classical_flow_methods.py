@@ -15,7 +15,7 @@ def lucus_kanade_flow(image1,image2,method = None):
     if method == "GoodFeaturesToTrack":
         # params for ShiTomasi corner detection
         feature_params = dict( maxCorners = 10000,
-                            qualityLevel = 0.3,
+                            qualityLevel = 0.1,
                             minDistance = 1,
                             blockSize = 3 )
         

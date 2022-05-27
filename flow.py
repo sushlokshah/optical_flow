@@ -14,7 +14,8 @@ from spynet.run import estimate
 def data_formating(flow, mask):
     flow = (flow + 512)*64
     flow_kitti_format = np.zeros([flow.shape[0],flow.shape[1],3])
-    flow_kitti_format[:,:,1:] = flow
+    flow_kitti_format[:,:,2] = flow[:,:,0]
+    flow_kitti_format[:,:,1] = flow[:,:,1]
     flow_kitti_format[:,:,0] = mask
     # plt.imshow(flow_kitti_format)
     # plt.show()
@@ -74,6 +75,7 @@ def calculate_flow(args):
     if os.path.exists(args["data_dir"]):
         images_list = sorted(os.listdir(args["data_dir"]))
         # print(images_list)
+        exec_time_list = []
         image_sets = [name.split("_")[0] for name in images_list]
         unique_set = np.array(image_sets)
         unique_set = list(np.unique(unique_set))        
@@ -81,9 +83,13 @@ def calculate_flow(args):
             image1 = cv.imread(args["data_dir"] +"/"+ pair + "_10.png",1)
             image2 = cv.imread(args["data_dir"] +"/"+ pair + "_11.png",1)
             # print(image1.shape,image2.shape)
+            start = time.time()
             flow, mask = optical_flow(image1,image2, method = args["method"])
+            end = time.time()
+            exec_time_list.append(end -start)
             save_data(args["output_dir"] +"/"+ args["method"]+"/"+ pair + "_10.png", flow, mask)
 
+        np.savez(args["output_dir"] +"/"+ args["method"] + ".npz" ,np.array(exec_time_list) )
         if args["eval"]:
             evalaute_data(args["output_dir"],method = args["method"])
         print("output dir:",args["output_dir"] +"/"+ args["method"])
