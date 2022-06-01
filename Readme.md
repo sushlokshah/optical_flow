@@ -33,3 +33,13 @@ python flow.py -m Farneback_flow
 ```
 
 * Hackmd link: https://hackmd.io/@Sushlok/S1FMH1Wv5/edit
+
+* kitti result format
+ - num_errors_bg/num_pixels_bg
+ - num_errors_bg_result/num_pixels_bg_result
+ - num_errors_fg/num_pixels_fg
+ - num_errors_fg_result/num_pixels_fg_result
+ - num_errors_all/num_pixels_all
+ - num_errors_all_result/num_pixels_all_result
+
+* Result CSV format

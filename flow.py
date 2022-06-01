@@ -6,11 +6,37 @@ import argparse
 import matplotlib.pyplot as plt
 import time
 import torch
+import pandas as pd
 # import numba
 
 from classical_flow.classical_flow_methods import lucus_kanade_flow, Farneback_flow
 from spynet.run import estimate
 
+class execution_data():
+    def __init__(self):
+        self.images = []
+        self.features = []
+        self.feature_extraction_time = []
+        self.flow_estimation_time = []
+        self.total_time = []
+        # dynamic_cpu_memory_consumption = []
+        # dynamic_gpu_memory_consumption = []
+    
+    def save_stats(self, csv_file_path):
+        num_features = []
+        for i in range(len(self.features)):
+            if self.features[i].all() != None:
+                num_features.append(len(self.features[i]))
+        data = {"images" : self.images,
+        "features" : num_features,
+        "feature_extraction_time" : self.feature_extraction_time,
+        "flow_estimation_time" : self.flow_estimation_time,
+        "total_time" : self.total_time}
+        df = pd.DataFrame.from_dict(data)
+        df.to_csv(csv_file_path)
+        print(df.describe())
+        # df = pd.read_csv(csv_file_path)
+                
 def data_formating(flow, mask):
     flow = (flow + 512)*64
     flow_kitti_format = np.zeros([flow.shape[0],flow.shape[1],3])
@@ -21,21 +47,7 @@ def data_formating(flow, mask):
     # plt.show()
     return flow_kitti_format
 
-def optical_flow(image1,image2, method = None):
-    if method == "lucas_kanade_GoodFeaturesToTrack":
-        flow, mask= lucus_kanade_flow(image1,image2,method="GoodFeaturesToTrack")
-    elif method == "lucas_kanade_Fast_features":
-        flow, mask = lucus_kanade_flow(image1,image2,method="Fast_features")
-    elif method == "Farneback_flow":
-        flow, mask = Farneback_flow(image1,image2)
-    elif method == "spynet":
-        # print(torch.FloatTensor((image1/255).transpose(2, 0, 1)).shape)
-        flow = estimate(torch.FloatTensor((image1/255).transpose(2, 0, 1)),torch.FloatTensor((image1/255).transpose(2, 0, 1)))
-        flow = flow.numpy().transpose(1, 2, 0)
-        mask = np.ones([flow.shape[0],flow.shape[1]])
-    return flow, mask
-
-def save_data(path,flow,mask):
+def save_data(path,mask_path,flow,mask):
     """output dataformat and the folder format
 
     Args:
@@ -61,21 +73,64 @@ def save_data(path,flow,mask):
 
     """
     flow_kitti_format = data_formating(flow,mask)
+    mask = mask.astype(np.int64)
+    cv.imwrite(mask_path,mask)
     flow_kitti_format = flow_kitti_format.astype(np.uint16)
     cv.imwrite(path,flow_kitti_format)
 
-def evalaute_data(path, method = None):
-        os.system("g++ -O3 -DNDEBUG -o ./evalution/cpp/evaluate_scene_flow ./evalution/cpp/evaluate_scene_flow.cpp -lpng")
-        os.system("./evalution/cpp/evaluate_scene_flow "+ args["method"])
+def optical_flow(image1,image2,params, method = None):
+    if method == "lucas_kanade_GoodFeaturesToTrack":
+        lkgft = params["lucas_kanade_GoodFeaturesToTrack_params"]
+        lk_params = dict( winSize  = lkgft["winSize"][0],
+                    maxLevel = lkgft["maxLevel"][0],
+                    criteria = lkgft["criteria"])
+        feature_params = dict( maxCorners = lkgft["maxCorners"][0],
+                            qualityLevel = lkgft["qualityLevel"][0],
+                            minDistance = lkgft["minDistance"][0],
+                            blockSize = lkgft["blockSize"] )
+        flow, mask, features,feature_extraction_time_, flow_estimation_time_= lucus_kanade_flow(image1,image2,lk_params,feature_params,method="GoodFeaturesToTrack")
+    elif method == "lucas_kanade_Fast_features":
+        lkfft = params["lucas_kanade_Fast_features_params"]
+        lk_params = dict( winSize  = lkfft["winSize"][0],
+                    maxLevel = lkfft["maxLevel"][0],
+                    criteria = lkfft["criteria"])
+        # print(lk_params)
+        feature_params = {}
+        feature_params["NonmaxSuppression"] = lkfft["NonmaxSuppression"]
+        feature_params["Threshold"] = lkfft["Threshold"]
+        flow, mask, features,feature_extraction_time_, flow_estimation_time_ = lucus_kanade_flow(image1,image2,lk_params,feature_params,method="Fast_features")
+    elif method == "Farneback_flow":
+        feature_extraction_time_ = 0
+        features = []
+        flow, mask,flow_estimation_time_ = Farneback_flow(image1,image2,params["Farneback_flow_params"])
+    elif method == "spynet":
+        features = []
+        feature_extraction_time_ = 0
+        # print(torch.FloatTensor((image1/255).transpose(2, 0, 1)).shape)
+        start = time.time()
+        flow = estimate(torch.FloatTensor((image1/255).transpose(2, 0, 1)),torch.FloatTensor((image1/255).transpose(2, 0, 1)))
+        end = time.time()
+        flow_estimation_time_ = end - start
+        flow = flow.numpy().transpose(1, 2, 0)
+        mask = np.ones([flow.shape[0],flow.shape[1]])
+    return flow, mask, features,feature_extraction_time_, flow_estimation_time_
 
-def calculate_flow(args):
+def evalaute_data(path, method = None):
+        # os.system("g++ -O3 -DNDEBUG -o ./evalution/cpp/evaluate_scene_flow ./evalution/cpp/evaluate_scene_flow.cpp -lpng")
+        os.system("./evaluation/cpp/build/evaluate_scene_flow "+ args["method"])
+
+def calculate_flow(args,params):
     if not os.path.exists(args["output_dir"] +"/"+ args["method"]):
         os.makedirs(args["output_dir"] +"/"+ args["method"])
         
     if os.path.exists(args["data_dir"]):
         images_list = sorted(os.listdir(args["data_dir"]))
         # print(images_list)
-        exec_time_list = []
+        # total_exec_time_list = []
+        # feaatures = []
+        # feature_extraction_time = []
+        data = execution_data()
+
         image_sets = [name.split("_")[0] for name in images_list]
         unique_set = np.array(image_sets)
         unique_set = list(np.unique(unique_set))        
@@ -83,13 +138,18 @@ def calculate_flow(args):
             image1 = cv.imread(args["data_dir"] +"/"+ pair + "_10.png",1)
             image2 = cv.imread(args["data_dir"] +"/"+ pair + "_11.png",1)
             # print(image1.shape,image2.shape)
-            start = time.time()
-            flow, mask = optical_flow(image1,image2, method = args["method"])
-            end = time.time()
-            exec_time_list.append(end -start)
-            save_data(args["output_dir"] +"/"+ args["method"]+"/"+ pair + "_10.png", flow, mask)
+            flow, mask, features,feature_extraction_time_, flow_estimation_time_ = optical_flow(image1,image2,params, method = args["method"])
+            data.images.append(args["data_dir"] +"/"+ pair + "_10.png")
+            data.features.append(features)
+            data.feature_extraction_time.append(feature_extraction_time_)
+            data.flow_estimation_time.append(flow_estimation_time_)
+            data.total_time.append(feature_extraction_time_ + flow_estimation_time_)
+            
+            # total_exec_time_list.append(end -start)
+            save_data(args["output_dir"] +"/"+ args["method"]+"/"+ pair + "_10.png",args["output_dir"] +"/"+ args["method"]+"/masks/"+ pair + "_10.png", flow, mask)
 
-        np.savez(args["output_dir"] +"/"+ args["method"] + ".npz" ,np.array(exec_time_list) )
+        # np.savez(args["output_dir"] +"/"+ args["method"] + ".npz" ,np.array(exec_time_list) )
+        data.save_stats(args["output_dir"] +"/"+ args["method"]+"/time_stats.csv")
         if args["eval"]:
             evalaute_data(args["output_dir"],method = args["method"])
         print("output dir:",args["output_dir"] +"/"+ args["method"])
@@ -106,19 +166,61 @@ if __name__ == "__main__":
     print("list of methods")
     for methods in Methods_list:
         print(methods)
-        
+    
+    """set these parameters for the setting execution configuration.
+    """
+    Farneback_flow_params = {}
+    Farneback_flow_params["pyr_scale"] =  0.5
+    Farneback_flow_params["levels"] = 3
+    Farneback_flow_params["winsize"] = 15
+    Farneback_flow_params["iterations"] = 3
+    Farneback_flow_params["poly_n"] = 5
+    Farneback_flow_params["poly_sigma"] = 1.2 
+    Farneback_flow_params["flags"] = 0
+
+    lucas_kanade_Fast_features_params = {}
+    lucas_kanade_Fast_features_params["NonmaxSuppression"] = 1
+    lucas_kanade_Fast_features_params["Threshold"] = 10
+    lucas_kanade_Fast_features_params["winSize"] = (15, 15),
+    lucas_kanade_Fast_features_params["maxLevel"] = 2,
+    lucas_kanade_Fast_features_params["criteria"] = (cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 0.03)
+    
+    lucas_kanade_GoodFeaturesToTrack_params = {}
+    lucas_kanade_GoodFeaturesToTrack_params["maxCorners"] = 10000,
+    lucas_kanade_GoodFeaturesToTrack_params["qualityLevel"] = 0.1,
+    lucas_kanade_GoodFeaturesToTrack_params["minDistance"] = 3,
+    lucas_kanade_GoodFeaturesToTrack_params["blockSize"] = 3
+    lucas_kanade_GoodFeaturesToTrack_params["winSize"] = (15, 15),
+    lucas_kanade_GoodFeaturesToTrack_params["maxLevel"] = 2,
+    lucas_kanade_GoodFeaturesToTrack_params["criteria"] = (cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 0.03)
+    
+    params = {}
+    params["Farneback_flow_params"] = Farneback_flow_params
+    params["lucas_kanade_Fast_features_params"] = lucas_kanade_Fast_features_params
+    params["lucas_kanade_GoodFeaturesToTrack_params"] = lucas_kanade_GoodFeaturesToTrack_params
+    
     ap = argparse.ArgumentParser()
-    ap.add_argument("-d", "--data_dir", required=False, default="./dataset/data_scene_flow/training/image_2",
+    ap.add_argument("-d","--data_dir", required=False, default="./dataset/data_scene_flow/training/image_2",
         help="path to input dataset (i.e., directory of images)")
     
     ap.add_argument("-o", "--output_dir", required=False, default= "./results",
         help="path of directory for the results")
 
-    ap.add_argument("-m", "--method", required=False, default= "spynet",
+    ap.add_argument("-m", "--method", required=False, default= "lucas_kanade_GoodFeaturesToTrack",
         help="method")
     
     ap.add_argument("--eval",type = bool,default=False)
     
     args = vars(ap.parse_args())
     
-    calculate_flow(args)
+    calculate_flow(args, params)
+    
+    
+# count   200.000000               200.000000            200.000000  200.000000
+# mean   1091.860000                 0.005558              0.002215    0.007773
+# std     658.928558                 0.001294              0.001130    0.001953
+# min      61.000000                 0.004895              0.000913    0.005960
+# 25%     639.000000                 0.005197              0.001458    0.006727
+# 50%     944.000000                 0.005363              0.001823    0.007197
+# 75%    1319.750000                 0.005552              0.002621    0.008182
+# max    4507.000000                 0.021938              0.006987    0.027318 
