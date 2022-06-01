@@ -148,7 +148,7 @@ vector<float> flowErrorsOutlier (FlowImage &F_gt,FlowImage &F_orig,FlowImage &F_
 
       if (O_map.getValue(u,v)==0) 
       {
-        if (F_gt.isValid(u,v) && F_orig.isValid(u,v)) 
+        if (F_gt.isValid(u,v)) 
         {
           if (f_err)
             num_errors_bg++;
@@ -163,7 +163,7 @@ vector<float> flowErrorsOutlier (FlowImage &F_gt,FlowImage &F_orig,FlowImage &F_
       } 
       else 
       {
-        if (F_gt.isValid(u,v) && F_orig.isValid(u,v)) 
+        if (F_gt.isValid(u,v)) 
         {
           if (f_err)
             num_errors_fg++;
@@ -176,7 +176,7 @@ vector<float> flowErrorsOutlier (FlowImage &F_gt,FlowImage &F_orig,FlowImage &F_
           }
         }
       }
-      if (F_gt.isValid(u,v) && F_orig.isValid(u,v)) 
+      if (F_gt.isValid(u,v)) 
       {
         if (f_err)
           num_errors_all++;
