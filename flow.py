@@ -11,6 +11,7 @@ import pandas as pd
 
 from classical_flow.classical_flow_methods import lucus_kanade_flow, Farneback_flow
 from spynet.run import estimate
+from evaluation.evalute_error import evalute_kitti_error
 
 class execution_data():
     def __init__(self):
@@ -25,7 +26,7 @@ class execution_data():
     def save_stats(self, csv_file_path):
         num_features = []
         for i in range(len(self.features)):
-            if self.features[i].all() != None:
+            if np.array(self.features[i]).all() != None:
                 num_features.append(len(self.features[i]))
         data = {"images" : self.images,
         "features" : num_features,
@@ -34,7 +35,7 @@ class execution_data():
         "total_time" : self.total_time}
         df = pd.DataFrame.from_dict(data)
         df.to_csv(csv_file_path)
-        print(df.describe())
+        print("time:\n", df.describe())
         # df = pd.read_csv(csv_file_path)
                 
 def data_formating(flow, mask):
@@ -73,7 +74,7 @@ def save_data(path,mask_path,flow,mask):
 
     """
     flow_kitti_format = data_formating(flow,mask)
-    mask = mask.astype(np.int64)
+    mask = np.array(mask).astype(np.int64)
     cv.imwrite(mask_path,mask)
     flow_kitti_format = flow_kitti_format.astype(np.uint16)
     cv.imwrite(path,flow_kitti_format)
@@ -117,11 +118,16 @@ def optical_flow(image1,image2,params, method = None):
 
 def evalaute_data(path, method = None):
         # os.system("g++ -O3 -DNDEBUG -o ./evalution/cpp/evaluate_scene_flow ./evalution/cpp/evaluate_scene_flow.cpp -lpng")
-        os.system("./evaluation/cpp/build/evaluate_scene_flow "+ args["method"])
+        os.system("./evaluation/cpp/build/evaluate_scene_flow "+ method)
+        print(path + "/" + method)
+        evalute_kitti_error(path + "/" + method)
 
 def calculate_flow(args,params):
     if not os.path.exists(args["output_dir"] +"/"+ args["method"]):
         os.makedirs(args["output_dir"] +"/"+ args["method"])
+    
+    if not os.path.exists(args["output_dir"] +"/"+ args["method"] + "/" + "masks"):
+        os.makedirs((args["output_dir"] +"/"+ args["method"]+ "/" + "masks"))
         
     if os.path.exists(args["data_dir"]):
         images_list = sorted(os.listdir(args["data_dir"]))
@@ -146,7 +152,7 @@ def calculate_flow(args,params):
             data.total_time.append(feature_extraction_time_ + flow_estimation_time_)
             
             # total_exec_time_list.append(end -start)
-            save_data(args["output_dir"] +"/"+ args["method"]+"/"+ pair + "_10.png",args["output_dir"] +"/"+ args["method"]+"/masks/"+ pair + "_10.png", flow, mask)
+            save_data(args["output_dir"] +"/"+ args["method"]+"/"+ pair + "_10.png",args["output_dir"] +"/"+ args["method"]+"/" + "masks/"+ pair + "_10.png", flow, mask)
 
         # np.savez(args["output_dir"] +"/"+ args["method"] + ".npz" ,np.array(exec_time_list) )
         data.save_stats(args["output_dir"] +"/"+ args["method"]+"/time_stats.csv")
@@ -180,7 +186,7 @@ if __name__ == "__main__":
 
     lucas_kanade_Fast_features_params = {}
     lucas_kanade_Fast_features_params["NonmaxSuppression"] = 1
-    lucas_kanade_Fast_features_params["Threshold"] = 10
+    lucas_kanade_Fast_features_params["Threshold"] = 60
     lucas_kanade_Fast_features_params["winSize"] = (15, 15),
     lucas_kanade_Fast_features_params["maxLevel"] = 2,
     lucas_kanade_Fast_features_params["criteria"] = (cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 0.03)
@@ -206,10 +212,10 @@ if __name__ == "__main__":
     ap.add_argument("-o", "--output_dir", required=False, default= "./results",
         help="path of directory for the results")
 
-    ap.add_argument("-m", "--method", required=False, default= "lucas_kanade_GoodFeaturesToTrack",
+    ap.add_argument("-m", "--method", required=False, default= "lucas_kanade_Fast_features",
         help="method")
     
-    ap.add_argument("--eval",type = bool,default=False)
+    ap.add_argument("--eval",type = bool,default=True)
     
     args = vars(ap.parse_args())
     
@@ -224,3 +230,28 @@ if __name__ == "__main__":
 # 50%     944.000000                 0.005363              0.001823    0.007197
 # 75%    1319.750000                 0.005552              0.002621    0.008182
 # max    4507.000000                 0.021938              0.006987    0.027318 
+
+
+
+
+# time:
+#            features  feature_extraction_time  flow_estimation_time  total_time
+# count   200.000000               200.000000            200.000000  200.000000
+# mean   3142.865000                 0.002380              0.004992    0.007372
+# std    1586.492309                 0.003108              0.002426    0.004687
+# min      84.000000                 0.000226              0.000760    0.000985
+# 25%    1986.250000                 0.001490              0.003134    0.004565
+# 50%    2770.500000                 0.001970              0.004476    0.006396
+# 75%    3845.250000                 0.002759              0.006022    0.008901
+# max    9374.000000                 0.044020              0.014855    0.055156
+
+# ./results/lucas_kanade_Fast_features
+#        errors_bg  errors_fg  errors_all
+# count   2.000000   2.000000    2.000000
+# mean    0.374854   0.408638    0.384918
+# std     0.039570   0.006973    0.029664
+# min     0.346874   0.403707    0.363943
+# 25%     0.360864   0.406172    0.374431
+# 50%     0.374854   0.408638    0.384918
+# 75%     0.388845   0.411104    0.395406
+# max     0.402835   0.413569    0.405894
