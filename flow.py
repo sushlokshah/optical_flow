@@ -186,7 +186,7 @@ if __name__ == "__main__":
 
     lucas_kanade_Fast_features_params = {}
     lucas_kanade_Fast_features_params["NonmaxSuppression"] = 1
-    lucas_kanade_Fast_features_params["Threshold"] = 60
+    lucas_kanade_Fast_features_params["Threshold"] = 30
     lucas_kanade_Fast_features_params["winSize"] = (15, 15),
     lucas_kanade_Fast_features_params["maxLevel"] = 2,
     lucas_kanade_Fast_features_params["criteria"] = (cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 0.03)
@@ -255,3 +255,26 @@ if __name__ == "__main__":
 # 50%     0.374854   0.408638    0.384918
 # 75%     0.388845   0.411104    0.395406
 # max     0.402835   0.413569    0.405894
+
+# ./results/lucas_kanade_Fast_features
+# evaluting AAE,EPE,absolute error
+#                 AAE         EPE  absolute_error
+# count    200.000000  200.000000      200.000000
+# mean    2299.834379   16.176276       19.418795
+# std     1853.132945   13.490975       16.248685
+# min      544.028565    0.332128        0.403185
+# 25%     1469.188801    4.911900        5.834550
+# 50%     2003.000418   13.437732       16.423746
+# 75%     2579.586602   24.651536       29.693925
+# max    22861.001423   74.758801       86.021432
+
+
+#                AAE         EPE  absolute_error
+# count   200.000000  200.000000      200.000000
+# mean    576.900102   18.038368       21.989338
+# std     636.860607   13.212509       16.147871
+# min     191.537988    0.300616        0.368305
+# 25%     402.608269    5.721263        6.968899
+# 50%     499.161542   16.528652       20.312301
+# 75%     637.373469   28.659821       35.502201
+# max    9143.668797   63.599354       72.990135
