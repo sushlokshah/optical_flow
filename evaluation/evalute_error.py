@@ -100,9 +100,24 @@ if __name__ == "__main__":
     "liteflownet_Fast_features_10",
     "liteflownet_Fast_features_30",
     "liteflownet_Fast_features_60",
-    "liteflownet_GoodFeaturesToTrack"
+    "liteflownet_GoodFeaturesToTrack",
+    "pwcnet",
+    "pwcnet_Fast_features_10",
+    "pwcnet_Fast_features_30",
+    "pwcnet_Fast_features_60",
+    "pwcnet_GoodFeaturesToTrack",
+    "pwcnet_ft",
+    "pwcnet_ft_Fast_features_10",
+    "pwcnet_ft_Fast_features_30",
+    "pwcnet_ft_Fast_features_60",
+    "pwcnet_ft_GoodFeaturesToTrack",
     ]
     
     for method in Methods_list:
         print(method)
         evalute_kitti_error("results/"+ method)
+        
+        
+        
+
+
