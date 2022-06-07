@@ -6,3 +6,4 @@ dataset/data_scene_flow_calib/
 dataset/data_scene_flow_multiview/
 evaluation/cpp/build/
 papers/
+PWC-Net/
