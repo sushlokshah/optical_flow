@@ -1,6 +1,6 @@
 [submodule "spynet"]
-    path = spynet
-    url = https://github.com/sushlokshah/spynet.git
+	path = spynet
+	url = https://github.com/sushlokshah/pytorch-spynet.git
 
 [submodule "flownet2-pytorch"]
 	path = flownet2-pytorch
