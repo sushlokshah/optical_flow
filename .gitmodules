@@ -8,3 +8,6 @@
 [submodule "mmflow"]
 	path = mmflow
 	url = https://github.com/sushlokshah/mmflow.git
+[submodule "VCN"]
+	path = VCN
+	url = https://github.com/sushlokshah/VCN.git
