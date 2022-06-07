@@ -212,7 +212,7 @@ if __name__ == "__main__":
     ap.add_argument("-o", "--output_dir", required=False, default= "./results",
         help="path of directory for the results")
 
-    ap.add_argument("-m", "--method", required=False, default= "lucas_kanade_Fast_features",
+    ap.add_argument("-m", "--method", required=False, default= "spynet",
         help="method")
     
     ap.add_argument("--eval",type = bool,default=True)
