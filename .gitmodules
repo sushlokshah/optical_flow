@@ -4,4 +4,4 @@
 
 [submodule "flownet2-pytorch"]
 	path = flownet2-pytorch
-	url = https://github.com/sushlokshah/flownet2-pytorch.git
+	url = https://github.com/sushlokshah/flownet2-pytorch-1.git
