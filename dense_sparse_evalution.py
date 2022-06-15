@@ -6,9 +6,12 @@ dense_methods = [
                     # "Farneback_flow",
                     # "spynet",
                     # "flownet2",
-                    "liteflownet",
-                    "pwcnet",
-                    "pwcnet_ft"
+                    # "liteflownet",
+                    # "pwcnet",
+                    # "pwcnet_ft",
+                    #"VCN",
+                    "irr_kitti",
+                    "irr_no_ft"
                 ]
 
 sparse_methods = ["lucas_kanade_Fast_features_10",

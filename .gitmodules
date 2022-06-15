@@ -11,3 +11,6 @@
 [submodule "VCN"]
 	path = VCN
 	url = https://github.com/sushlokshah/VCN.git
+[submodule "GMFlowNet"]
+	path = GMFlowNet
+	url = https://github.com/sushlokshah/GMFlowNet.git

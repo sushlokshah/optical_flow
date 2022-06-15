@@ -1,9 +1,6 @@
 .vscode
 results/
-dataset/zips/
-dataset/data_scene_flow/
-dataset/data_scene_flow_calib/
-dataset/data_scene_flow_multiview/
+dataset/
 evaluation/cpp/build/
 papers/
 PWC-Net/

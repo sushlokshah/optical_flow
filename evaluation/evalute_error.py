@@ -96,28 +96,28 @@ if __name__ == "__main__":
     # "spynet_GoodFeaturesToTrack",
     # "flownet2_GoodFeaturesToTrack",
     # "lucas_kanade_Fast_features",
-    "liteflownet",
-    "liteflownet_Fast_features_10",
-    "liteflownet_Fast_features_30",
-    "liteflownet_Fast_features_60",
-    "liteflownet_GoodFeaturesToTrack",
-    "pwcnet",
-    "pwcnet_Fast_features_10",
-    "pwcnet_Fast_features_30",
-    "pwcnet_Fast_features_60",
-    "pwcnet_GoodFeaturesToTrack",
-    "pwcnet_ft",
-    "pwcnet_ft_Fast_features_10",
-    "pwcnet_ft_Fast_features_30",
-    "pwcnet_ft_Fast_features_60",
-    "pwcnet_ft_GoodFeaturesToTrack",
+    # "liteflownet",
+    # "liteflownet_Fast_features_10",
+    # "liteflownet_Fast_features_30",
+    # "liteflownet_Fast_features_60",
+    # "liteflownet_GoodFeaturesToTrack",
+    # "pwcnet",
+    # "pwcnet_Fast_features_10",
+    # "pwcnet_Fast_features_30",
+    # "pwcnet_Fast_features_60",
+    # "pwcnet_GoodFeaturesToTrack",
+    # "pwcnet_ft",
+    # "pwcnet_ft_Fast_features_10",
+    # "pwcnet_ft_Fast_features_30",
+    # "pwcnet_ft_Fast_features_60",
+    # "pwcnet_ft_GoodFeaturesToTrack",
+    "VCN",
+    "VCN_Fast_features_10",
+    "VCN_Fast_features_30",
+    "VCN_Fast_features_60",
+    "VCN_GoodFeaturesToTrack"
     ]
     
     for method in Methods_list:
         print(method)
         evalute_kitti_error("results/"+ method)
-        
-        
-        
-
-
