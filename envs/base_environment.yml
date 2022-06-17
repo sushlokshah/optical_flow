@@ -102,8 +102,12 @@ dependencies:
     - charset-normalizer==2.0.12
     - click==7.1.2
     - colorama==0.4.4
+    - einops==0.4.1
+    - fvcore==0.1.5.post20220512
     - idna==3.3
+    - imageio==2.19.3
     - importlib-metadata==4.11.4
+    - iopath==0.1.9
     - markdown==3.3.7
     - mmcv-full==1.5.2
     - model-index==0.1.11
@@ -111,9 +115,13 @@ dependencies:
     - opencv-python==4.5.5.64
     - openmim==0.1.5
     - ordered-set==4.1.0
+    - portalocker==2.4.0
     - requests==2.27.1
+    - sklearn==0.0
     - tabulate==0.8.9
+    - termcolor==1.1.0
     - urllib3==1.26.9
+    - yacs==0.1.8
     - yapf==0.32.0
     - zipp==3.8.0
 prefix: /home/sushlok/anaconda3/envs/optical_flow

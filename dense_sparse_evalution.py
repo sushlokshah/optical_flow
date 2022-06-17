@@ -10,9 +10,25 @@ dense_methods = [
                     # "pwcnet",
                     # "pwcnet_ft",
                     #"VCN",
-                    "irr_kitti",
-                    "irr_no_ft"
-                ]
+                    # "irr_kitti",
+                    # "irr_no_ft",
+                    # "liteflownet2_kitti",
+                    # "liteflownet2_no_ft",
+                    # "maskflownet_final",
+                    # "maskflownet_ft_flying_chair",
+                    # "maskflownet-s_ft_flyingchair",
+                    # "maskflownet-s_ft_flyingthings",
+                    # "raft_kitti",
+                    # "raft_mixed_data",
+                    # "gma_kitti",            
+                    # "gma_p_only_mixed_data",
+                    # "gma_mixed_data",
+                    # "gma_plus_kitti",      
+                    # "gma_plus_mixed_data",
+                    # "gma_p_only_kitti",
+                    "gmflownet_kitti",
+                    "gmflownet_mixed"
+                    ]
 
 sparse_methods = ["lucas_kanade_Fast_features_10",
                   "lucas_kanade_Fast_features_30",
