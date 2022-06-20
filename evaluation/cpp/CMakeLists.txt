@@ -9,6 +9,8 @@ cmake_minimum_required(VERSION 3.0)
 set(CMAKE_CXX_STANDARD 11)
 
 add_executable(evaluate_scene_flow evaluate_scene_flow.cpp)
+add_executable(evaluate_flow_vkitti evaluate_flow_vkitti.cpp)
 find_package(PNG REQUIRED)
 include_directories( ${PNG_INCLUDE_DIRS} )
 target_link_libraries(evaluate_scene_flow ${PNG_LIBRARIES})
+target_link_libraries(evaluate_flow_vkitti ${PNG_LIBRARIES})
