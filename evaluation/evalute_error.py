@@ -134,7 +134,7 @@ def evaluate_vkitti_error(seq):
             gt_flow = cv.imread(gt_path + "/" + i, cv.IMREAD_ANYCOLOR | cv.IMREAD_ANYDEPTH)
             # print(gt_flow)
             result_flow = cv.imread(path + "/" + i, cv.IMREAD_ANYCOLOR | cv.IMREAD_ANYDEPTH)
-            error_map, AAE, EPE, absolute_error = error_kitti(gt_flow,result_flow)
+            error_map, AAE, EPE, absolute_error = error_vkitti(gt_flow,result_flow)
             if not os.path.exists(path + "/error_vis"):
                 os.makedirs(path + "/error_vis")
             cv.imwrite(path + "/error_vis/" + i ,error_map)
